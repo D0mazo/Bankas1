@@ -1,38 +1,158 @@
+body {
+  margin: 0;
+  font-family:  Arial;
+  background: rgb(225, 206, 206);
+}
+
 .App {
   text-align: center;
+  padding: 20px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+h1 {
+  font-size: 2em;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.search-bar {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  margin-top: 20px;
+  border: 2px solid #333;
+  width: 30%;
+  margin: 0 auto; 
+}
+
+.search-bar input {
+  padding: 5px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.search-bar button {
+  padding: 5px 10px;
+  color: white;
+  background: green;
+  margin-bottom: 10px;
+
+}
+
+.selected-account {
+  border: 2px solid #333;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.selected-account h2 {
+  margin-top: 0;
+}
+
+.transaction-buttons {
+  margin-top: 10px;
+
+}
+
+.transaction-buttons input {
+  margin-right: 10px;
+  font-size: large;
+}
+
+
+.transaction-buttons button {
+  margin-right: 10px;
+  padding: 5px;
+  color: white;
+  background: green;
+}
+
+.transaction-buttons button.close-button {
+  background-color: #ff5050;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.accounts-list {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.account {
+  border: 2px solid #333;
+  padding: 10px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.account strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.account p {
+  margin: 0;
+}
+
+.add-account {
+  border: 2px solid #333;
+  padding: 10px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.add-account label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.add-account input {
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.add-account button {
+  padding: 5px 10px;
+  color: white;
+  background: green;
+}
+
+.create-account {
+  display: flex;
+  flex: auto;
+}
+
+
+.create-account {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  border: 2px solid #333;
+  width: 30%;
+  margin: 0 auto;
+}
+
+.create-account input {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding: 5px;
+}
+
+.create-account button {
+  margin-top: 10px;
+  color: white;
+  background: green;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+}
+
+.notification {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: #0d0e52;
+  color: white;
+  padding: 35px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
