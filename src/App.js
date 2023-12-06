@@ -1,40 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import './App.css'; //labai basic css, tik kad padėtų atskirti elementus vienus nuo kitų
 
-const App = () => { //naudojami
+const App = () => {
   const [accounts, setAccounts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [newAccount, setNewAccount] = useState({ name: '', surname: '', funds: '' });
-  const [notification, setNotification] = useState(null); //žinutėms pasirodyti
+  const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   //pradžios duomenys
   useEffect(() => {
-    const initialAccounts = [
-      { id: 1, name: 'Gytis', surname: 'Masiulis', funds: 500 },
-      { id: 2, name: 'Dainius', surname: 'Kupšas', funds: 1000 },
-      { id: 3, name: 'Gintaras', surname: 'Einikis', funds: 10400 },
-      { id: 4, name: 'Arvydas', surname: 'Sabonis', funds: 10560900 },
-      { id: 5, name: 'Saulius', surname: 'Štombergas', funds: 166000 },
-      { id: 6, name: 'Arvydas', surname: 'Macijauskas', funds: 1445000 },
-      { id: 7, name: 'Antanas', surname: 'Sireika', funds: 10 },
-      { id: 8, name: 'Darius', surname: 'Lukminas', funds: 630 },
-      { id: 9, name: 'Donatas', surname: 'Slanina', funds: 9000 },
-      { id: 10, name: 'Gintaras', surname: 'Krapikas', funds: 12000 },
-
-    ];
-    // išskirstyti pagal alfabetą, pagal pavarde
-    const sortedAccounts = initialAccounts.slice().sort((a, b) => a.surname.localeCompare(b.surname));
-    setAccounts(sortedAccounts);
-
+    const storedAccounts = localStorage.getItem('bankAccounts');
+    if (storedAccounts) {
+      setAccounts(JSON.parse(storedAccounts));
+    } else {
+      const initialAccounts = [
+        { id: 1, name: 'Gytis', surname: 'Masiulis', funds: 500 },
+        { id: 2, name: 'Dainius', surname: 'Kupšas', funds: 1000 },
+        { id: 3, name: 'Gintaras', surname: 'Einikis', funds: 10400 },
+        { id: 4, name: 'Arvydas', surname: 'Sabonis', funds: 10560900 },
+        { id: 5, name: 'Saulius', surname: 'Štombergas', funds: 166000 },
+        { id: 6, name: 'Arvydas', surname: 'Macijauskas', funds: 1445000 },
+        { id: 7, name: 'Antanas', surname: 'Sireika', funds: 10 },
+        { id: 8, name: 'Darius', surname: 'Lukminas', funds: 630 },
+        { id: 9, name: 'Donatas', surname: 'Slanina', funds: 9000 },
+        { id: 10, name: 'Gintaras', surname: 'Krapikas', funds: 12000 },
+      ];
+      setAccounts(initialAccounts);
+      localStorage.setItem('bankAccounts', JSON.stringify(initialAccounts));
+    }
+    setLoading(false);
   }, []);
 
+  if (loading) {
+    return <p>Puslapiukas Kraunasi</p>;
+  }
+
+  const handleCloseField = () => {
+    setSelectedAccount(null);
+  };
+  //žinutė
   const showNotification = (message) => {
     setNotification(message);
     setTimeout(() => {
       setNotification(null);
     }, 5000); // žinutė, bus 5 sekundes
-  }; 
+  };
+
+
   //paieškos baras
   const handleSearch = () => {
     const foundAccount = accounts.find(
@@ -44,94 +58,84 @@ const App = () => { //naudojami
     if (foundAccount) {
       setSelectedAccount(foundAccount);
     } else {
-      alert('Account not found.');
+      alert('Nerasta');
     }
   };
 
-
-  //redagacija - pridėti
+  //operacijos
+  //pridedu
   const handleAddFunds = () => {
-    if (!selectedAccount || isNaN(newAccount.funds)) {
-      return; 
-    }
-  
     const addedFunds = parseFloat(newAccount.funds).toFixed(2);
     showNotification(`Pridėjom ${addedFunds} € į ${selectedAccount.name} ${selectedAccount.surname}.`);
-  
-    setAccounts((prevAccounts) =>
-      prevAccounts.map((acc) =>
+
+    setAccounts((prevAccounts) => {
+      const updatedAccounts = prevAccounts.map((acc) =>
         acc.id === selectedAccount.id
           ? { ...acc, funds: acc.funds + parseFloat(newAccount.funds) }
           : acc
-      )
-    );
+      );
+      localStorage.setItem('bankAccounts', JSON.stringify(updatedAccounts));
+      return updatedAccounts;
+    });
   };
+  //nuimu
+  const handleDebitFunds = () => {
+    const debitedFunds = parseFloat(newAccount.funds).toFixed(2);
+    showNotification(`Nuėmėm ${debitedFunds} € nuo ${selectedAccount.name} ${selectedAccount.surname}.`);
 
- // redagacija - atimti
- const handleDebitFunds = () => {
-  if (!selectedAccount || isNaN(newAccount.funds)) {
-    alert('Please select an account and enter a valid amount.');
-    return;
-  }
-
-  const debitedFunds = parseFloat(newAccount.funds).toFixed(2);
-  showNotification(`Nuėmėm ${debitedFunds} € nuo ${selectedAccount.name} ${selectedAccount.surname}.`);
-
-  setAccounts((prevAccounts) =>
-    prevAccounts.map((acc) =>
-      acc.id === selectedAccount.id
-        ? { ...acc, funds: acc.funds - parseFloat(newAccount.funds) }
-        : acc
-    )
-  );
-};
- 
-  //redagacija - išrinti accountą
+    setAccounts((prevAccounts) => {
+      const updatedAccounts = prevAccounts.map((acc) =>
+        acc.id === selectedAccount.id
+          ? { ...acc, funds: acc.funds - parseFloat(newAccount.funds) }
+          : acc
+      );
+      localStorage.setItem('bankAccounts', JSON.stringify(updatedAccounts));
+      return updatedAccounts;
+    });
+  };
+  //ištrinu
   const handleDeleteAccount = () => {
-    if (!selectedAccount) {
-      alert('Please select an account.');
-      return;
-    }
-    showNotification(`Išrtynėm ${selectedAccount.name} ${selectedAccount.surname} Accountą.`);
-    setAccounts((prevAccounts) => prevAccounts.filter((acc) => acc.id !== selectedAccount.id));
+    showNotification(`Ištrynėm ${selectedAccount.name} ${selectedAccount.surname} Accountą.`);
+
+    setAccounts((prevAccounts) => {
+      const updatedAccounts = prevAccounts.filter((acc) => acc.id !== selectedAccount.id);
+      localStorage.setItem('bankAccounts', JSON.stringify(updatedAccounts));
+      return updatedAccounts;
+    });
     setSelectedAccount(null);
   };
-
-  const handleCloseField = () => {
-    setSelectedAccount(null);
-  };
-
-  // sukuriu naują Account
+  //naujas
   const handleCreateAccount = () => {
-    if (!newAccount.name || !newAccount.surname || isNaN(newAccount.funds)) {
-      alert('Please enter valid name, surname, and funds.');
-      return;
-    }
-  
     showNotification(`Sukurėm naują ${newAccount.name} ${newAccount.surname} accountą.`);
+
     setAccounts((prevAccounts) => {
       const newId = prevAccounts.length + 1;
       const newAccountData = {
         id: newId,
         name: newAccount.name,
         surname: newAccount.surname,
-        funds: 0, // per default tai buvo paprašyta
+        funds: 0,
       };
-  
+
       // išrušiuoju ir naują Account
       const sortedAccounts = [...prevAccounts, newAccountData].sort((a, b) =>
         a.surname.localeCompare(b.surname)
       );
-  
+
+      localStorage.setItem('bankAccounts', JSON.stringify(sortedAccounts));
       setNewAccount({ name: '', surname: '', funds: '' });
       return sortedAccounts;
     });
   };
+
+
+
+
+
   return (
-  
     <div className="App">
       <h1>Bankas APP</h1>
-    
+
       <div className="search-bar">
         <h3>Surasti jau esantį Account`ą pagal pavardę</h3>
         <input
@@ -184,7 +188,7 @@ const App = () => { //naudojami
         </div>
       )}
       <ol className="accounts-list">
-        {accounts.map((account, index) => (
+        {accounts?.map((account) => (
           <li key={account.id} className="account" onClick={() => setSelectedAccount(account)}>
             <strong>{`${account.name} ${account.surname}`}</strong>
             <p>Suma: €{account.funds.toFixed(2)}</p>
